@@ -37,8 +37,8 @@ void Robot::RobotInit() {
  */
 void Robot::RobotPeriodic() {
   /* Standard Drive */
-  left_drive.Set(controller->GetRawAxis(1) * drive_speed - controller->GetRawAxis(2) * drive_speed);
-  right_drive.Set(controller->GetRawAxis(1) * drive_speed + controller->GetRawAxis(2) * drive_speed);
+  left_drive.Set((controller->GetRawAxis(1) - controller->GetRawAxis(2)) * drive_speed);
+  right_drive.Set((controller->GetRawAxis(1) + controller->GetRawAxis(2)) * drive_speed);
 }
 /**
  * This autonomous (along with the chooser code above) shows how to select
