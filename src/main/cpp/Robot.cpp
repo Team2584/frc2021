@@ -13,8 +13,8 @@
 /* Speed Variables */
 float drive_speed = 0.5; // between 0 and 1
 
-// declare things
-frc::Joystick *controller;
+/* Hardware (motor, controller, etc.) declarations */
+frc::Joystick *controller; // the full controller, confusingly called a 'Joystick'
 rev::CANSparkMax left_drive{3, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax right_drive{1, rev::CANSparkMax::MotorType::kBrushless};
 
@@ -36,6 +36,7 @@ void Robot::RobotInit() {
  * LiveWindow and SmartDashboard integrated updating.
  */
 void Robot::RobotPeriodic() {
+  /* Standard Drive */
   left_drive.Set(controller->GetRawAxis(1) * drive_speed - controller->GetRawAxis(2) * drive_speed);
   right_drive.Set(controller->GetRawAxis(1) * drive_speed + controller->GetRawAxis(2) * drive_speed);
 }
