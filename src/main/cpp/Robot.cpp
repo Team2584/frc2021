@@ -7,11 +7,24 @@
 #include <iostream>
 
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/Joystick.h>
+#include "rev/CANSparkMax.h"
+
+/* Speed Variables */
+float drive_speed = 0.5; // between 0 and 1
+
+// declare things
+frc::Joystick *controller;
+rev::CANSparkMax left_drive{3, rev::CANSparkMax::MotorType::kBrushless};
+rev::CANSparkMax right_drive{1, rev::CANSparkMax::MotorType::kBrushless};
+
 
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+
+  controller = new frc::Joystick(0);
 }
 
 /**
@@ -22,8 +35,10 @@ void Robot::RobotInit() {
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() {}
-
+void Robot::RobotPeriodic() {
+  left_drive.Set(controller->GetRawAxis(1) * drive_speed - controller->GetRawAxis(2) * drive_speed);
+  right_drive.Set(controller->GetRawAxis(1) * drive_speed + controller->GetRawAxis(2) * drive_speed);
+}
 /**
  * This autonomous (along with the chooser code above) shows how to select
  * between different autonomous modes using the dashboard. The sendable chooser
