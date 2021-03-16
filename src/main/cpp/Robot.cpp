@@ -35,11 +35,7 @@ void Robot::RobotInit() {
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() {
-  /* Standard Drive */
-  left_drive.Set((controller->GetRawAxis(1) - controller->GetRawAxis(2)) * drive_speed);
-  right_drive.Set((controller->GetRawAxis(1) + controller->GetRawAxis(2)) * drive_speed);
-}
+void Robot::RobotPeriodic() {}
 /**
  * This autonomous (along with the chooser code above) shows how to select
  * between different autonomous modes using the dashboard. The sendable chooser
@@ -74,7 +70,11 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {}
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  /* Standard Drive */
+  left_drive.Set((controller->GetRawAxis(1) - controller->GetRawAxis(2)) * drive_speed);
+  right_drive.Set((controller->GetRawAxis(1) + controller->GetRawAxis(2)) * drive_speed);
+}
 
 void Robot::DisabledInit() {}
 
