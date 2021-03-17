@@ -13,6 +13,12 @@
 /* Speed Variables */
 float drive_speed = 0.5; // between 0 and 1
 
+/* Joystick variables */
+float l_stick_y = 0;
+float r_stick_x = 0;
+float joystick_threshold_center = 0.05;
+float joystick_threshold_gap = 0.03;
+
 /* Hardware (motor, controller, etc.) declarations */
 frc::Joystick *controller; // the full controller, confusingly called a 'Joystick'
 rev::CANSparkMax left_drive{3, rev::CANSparkMax::MotorType::kBrushless};
@@ -74,10 +80,39 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  /* Standard Drive */
-  left_drive.Set((controller->GetRawAxis(1) - controller->GetRawAxis(2)) * drive_speed);
-  right_drive.Set((controller->GetRawAxis(1) + controller->GetRawAxis(2)) * drive_speed);
+  /*** THRESHOLD SYSTEM
+   *
+   * If there is only one threshold, then when the joystick is just on the edge
+   * of that threshold, it quickly alternates between on and off, resulting in
+   * the seizurebot.
+   *
+   * To avoid that, there are essentially 2 thresholds, one above the other. If
+   * the joystick value is above the top threshold, then it is taken as is. If
+   * it is below the lower value, it is ignored (set to 0). If it's in between,
+   * it's in a "dead area," and it is left in whatever state it was in before.
+   * This prevents the jumping back and forth over the threshold, and thus
+   * prevents the seizurebot.
+   *
+   * The one catch is that it isn't implemented as 2 thresholds. It is
+   * implemented as one center threshold and a gap for the size of the "dead
+   * zone"
+   ***/
+
+  if (std::abs(controller->GetRawAxis(1)) > joystick_threshold_center + (joystick_threshold_gap / 2))
+    l_stick_y = controller->GetRawAxis(1);
+  else if (std::abs(controller->GetRawAxis(1)) < joystick_threshold_center - (joystick_threshold_gap / 2))
+    l_stick_y = 0;
+
+  if (std::abs(controller->GetRawAxis(2)) > joystick_threshold_center + (joystick_threshold_gap / 2))
+    r_stick_x = controller->GetRawAxis(2);
+  else if (std::abs(controller->GetRawAxis(2)) < joystick_threshold_center - (joystick_threshold_gap / 2))
+    r_stick_x = 0;
+
+  left_drive.Set((-l_stick_y + r_stick_x) * drive_speed);
+  right_drive.Set((l_stick_y + r_stick_x) * drive_speed);
+
   /* Write encoder values to console */
+  frc::SmartDashboard::PutNumber("Joystick position", controller->GetRawAxis(1));
   frc::SmartDashboard::PutNumber("Left encoder position", left_drive_enc.GetPosition());
   frc::SmartDashboard::PutNumber("Right encoder position", right_drive_enc.GetPosition());
   frc::SmartDashboard::PutNumber("Left encoder velocity", left_drive_enc.GetVelocity());
