@@ -18,6 +18,9 @@ frc::Joystick *controller; // the full controller, confusingly called a 'Joystic
 rev::CANSparkMax left_drive{3, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax right_drive{1, rev::CANSparkMax::MotorType::kBrushless};
 
+rev::CANEncoder left_drive_enc = left_drive.GetEncoder();
+rev::CANEncoder right_drive_enc = right_drive.GetEncoder();
+
 
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
@@ -74,6 +77,11 @@ void Robot::TeleopPeriodic() {
   /* Standard Drive */
   left_drive.Set((controller->GetRawAxis(1) - controller->GetRawAxis(2)) * drive_speed);
   right_drive.Set((controller->GetRawAxis(1) + controller->GetRawAxis(2)) * drive_speed);
+  /* Write encoder values to console */
+  frc::SmartDashboard::PutNumber("Left encoder position", left_drive_enc.GetPosition());
+  frc::SmartDashboard::PutNumber("Right encoder position", right_drive_enc.GetPosition());
+  frc::SmartDashboard::PutNumber("Left encoder velocity", left_drive_enc.GetVelocity());
+  frc::SmartDashboard::PutNumber("Right encoder velocity", right_drive_enc.GetVelocity());
 }
 
 void Robot::DisabledInit() {}
